@@ -140,12 +140,73 @@ def get_most_recent_tweet(user):
 	match = results[0]
 	return match.get('href')
 
+def get_hn_karma(user):
+	r = requests.get("https://news.ycombinator.com/user?id=" + user).text
+	karma = (r.split('<tr><td valign=top>karma:</td><td>')[1])
+	karma = karma.split("</td></tr>")[0]
+	return int(karma)
+
+def get_hn_age(user):
+	r = requests.get("https://news.ycombinator.com/user?id=" + user).text
+	karma = (r.split('<tr><td valign=top>created:</td><td>')[1])
+	karma = karma.split(" day")[0]
+	return int(karma)
+
+def older_hn(user_a, user_b):
+	a = get_hn_age(user_a)
+	b = get_hn_age(user_b)
+	if a > b:
+		return user_a
+	else:
+		return user_b
+
+def higher_karma_hn(user_a, user_b):
+	a = get_hn_karma(user_a)
+	b = get_hn_karma(user_b)
+	if a > b:
+		return user_a
+	else:
+		return user_b
+
+def get_reddit_karma(user):
+	r = requests.get("http://www.reddit.com/user/" + user).text
+	link_karma = ((r.split('<span class="karma">')[1]).split("</span>")[0]).replace(",","")
+	comment_karma = ((r.split('<span class="karma comment-karma">')[1]).split("</span>")[0]).replace(",","")
+	return int(link_karma) + int(comment_karma)
+
+def higher_karma_reddit(user_a, user_b):
+	a = get_reddit_karma(user_a)
+	b = get_reddit_karma(user_b)
+	if a > b:
+		return user_a
+	else:
+		return user_b	
+
 def main():
 	# print is_in(raw_input("Enter site: "), raw_input("Enter text: "))
 	# print more_followers(raw_input("Person a: "), raw_input("Person b: "))
-	most_recent = get_most_recent_tweet(raw_input("Enter Twitter handle: "))
-	print "Favorites:", get_number_of_favorites(most_recent)
-	print "Retweets:", get_number_of_retweets(most_recent)
+	# username = raw_input("Enter Twitter handle: ")
+	# try:
+	# 	most_recent = get_most_recent_tweet(username)
+	# 	print "Favorites:", get_number_of_favorites(most_recent)
+	# 	print "Retweets:", get_number_of_retweets(most_recent)
+	# except IndexError:
+	# 	print
+	# try:
+	# 	print "HN Karma:", get_hn_karma(username)
+	# except IndexError:
+	# 	print
+	user_a = raw_input("Enter user_a: ")
+	user_b = raw_input("Enter user_b: ")
+	try:
+		print "More karma:",higher_karma_hn(user_a, user_b)
+		print "Older user:",older_hn(user_a, user_b)
+	except IndexError:
+		print
+	try:
+		print "Higher karma:", higher_karma_reddit(user_a, user_b)
+	except IndexError:
+		print
 
 if __name__ == "__main__":
 	main()

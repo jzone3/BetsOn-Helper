@@ -180,7 +180,28 @@ def higher_karma_reddit(user_a, user_b):
 	if a > b:
 		return user_a
 	else:
-		return user_b	
+		return user_b
+
+def get_iron_pants_rank(uuid):
+	data = {}
+	data["taskai"] = "null"
+	data["toLoad"] = "daily"
+	data["uid"] = uuid
+	data["isConnectedTrue"] = "pjjklnbs68"
+	data["submitName"] = "null"
+	r = requests.post("http://www.ringas.lt/ironpants/highscores.php", data=data)
+	parts = r.text.split("&")
+	for p in parts:
+		if p.startswith("kelintas"):
+			return int(p.split("=")[1])
+
+def higher_high_score(uuid_a, uuid_b):
+	a = get_iron_pants_rank(uuid_a)
+	b = get_iron_pants_rank(uuid_b)
+	if a > b:
+		return user_a
+	else:
+		return user_b
 
 def main():
 	# print is_in(raw_input("Enter site: "), raw_input("Enter text: "))
